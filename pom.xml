@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <groupId>dev.mailkite</groupId>
+  <artifactId>mailkite</artifactId>
+  <version>0.9.0</version>
+  <packaging>jar</packaging>
+
+  <name>MailKite SDK</name>
+  <description>Official MailKite SDK for Java — send and manage email over your own authenticated domain.</description>
+  <url>https://mailkite.dev/docs/libraries</url>
+
+  <licenses>
+    <license>
+      <name>MIT</name>
+      <url>https://opensource.org/licenses/MIT</url>
+      <distribution>repo</distribution>
+    </license>
+  </licenses>
+
+  <developers>
+    <developer>
+      <id>fijiwebdesign</id>
+      <name>Gabe</name>
+      <email>gabe@fijiwebdesign.com</email>
+      <organization>MailKite</organization>
+      <organizationUrl>https://mailkite.dev</organizationUrl>
+    </developer>
+  </developers>
+
+  <scm>
+    <connection>scm:git:https://github.com/mailkite/mailkite-java.git</connection>
+    <developerConnection>scm:git:ssh://git@github.com/mailkite/mailkite-java.git</developerConnection>
+    <url>https://github.com/mailkite/mailkite-java</url>
+  </scm>
+
+  <properties>
+    <maven.compiler.release>11</maven.compiler.release>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+  </properties>
+
+  <build>
+    <plugins>
+      <!-- Central requires a sources jar. -->
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-source-plugin</artifactId>
+        <version>3.3.1</version>
+        <executions>
+          <execution>
+            <id>attach-sources</id>
+            <goals><goal>jar-no-fork</goal></goals>
+          </execution>
+        </executions>
+      </plugin>
+
+      <!-- Central requires a javadoc jar. doclint off so sparse comments don't fail the build. -->
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-javadoc-plugin</artifactId>
+        <version>3.11.2</version>
+        <executions>
+          <execution>
+            <id>attach-javadocs</id>
+            <goals><goal>jar</goal></goals>
+          </execution>
+        </executions>
+        <configuration>
+          <doclint>none</doclint>
+        </configuration>
+      </plugin>
+
+      <!-- Central requires GPG-signed artifacts. Passphrase comes from MAVEN_GPG_PASSPHRASE in CI. -->
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-gpg-plugin</artifactId>
+        <version>3.2.7</version>
+        <executions>
+          <execution>
+            <id>sign-artifacts</id>
+            <phase>verify</phase>
+            <goals><goal>sign</goal></goals>
+          </execution>
+        </executions>
+        <configuration>
+          <gpgArguments>
+            <arg>--pinentry-mode</arg>
+            <arg>loopback</arg>
+          </gpgArguments>
+        </configuration>
+      </plugin>
+
+      <!-- Publishes to the Sonatype Central Portal on `mvn deploy` (server-id `central`). -->
+      <plugin>
+        <groupId>org.sonatype.central</groupId>
+        <artifactId>central-publishing-maven-plugin</artifactId>
+        <version>0.7.0</version>
+        <extensions>true</extensions>
+        <configuration>
+          <publishingServerId>central</publishingServerId>
+          <autoPublish>true</autoPublish>
+          <!-- Do NOT set waitUntil=published: plugin 0.7.0 crashes deserializing
+               Central's status response (Unrecognized field "warnings") *after* a
+               successful upload, turning a real publish into a false CI failure.
+               autoPublish handles release; the deploy returns once the bundle is up. -->
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
+</project>
